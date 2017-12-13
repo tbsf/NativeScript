@@ -139,7 +139,7 @@ export class ImageSource implements ImageSourceDefinition {
         });
     }
 
-    public setNativeSource(source: any): boolean {
+    public setNativeSource(source: android.graphics.Bitmap): boolean {
         this.android = source;
         return source != null;
     }
