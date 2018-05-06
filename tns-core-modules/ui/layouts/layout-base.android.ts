@@ -1,11 +1,35 @@
 ﻿import {
+    PseudoClassHandler,
     LayoutBaseCommon, clipToBoundsProperty,
     paddingLeftProperty, paddingTopProperty, paddingRightProperty, paddingBottomProperty, Length
 } from "./layout-base-common";
+import { TouchGestureEventData, GestureTypes, TouchAction } from "../gestures";
 
 export * from "./layout-base-common";
 
 export class LayoutBase extends LayoutBaseCommon {
+    private _highlightedHandler: (args: TouchGestureEventData) => void;
+
+    @PseudoClassHandler("normal", "highlighted", "pressed", "active")
+    _updateHandler(subscribe: boolean) {
+        if (subscribe) {
+            this._highlightedHandler = this._highlightedHandler || ((args: TouchGestureEventData) => {
+                switch (args.action) {
+                    case TouchAction.up:
+                        this._goToVisualState("normal");
+                        break;
+                    case TouchAction.down:
+                        this._goToVisualState("highlighted");
+                        break;
+                }
+            });
+            this.on(GestureTypes.touch, this._highlightedHandler);
+        } else {
+            this.off(GestureTypes.touch, this._highlightedHandler);
+        }
+    }
+
+
 
     [clipToBoundsProperty.getDefault](): boolean {
         return true;
